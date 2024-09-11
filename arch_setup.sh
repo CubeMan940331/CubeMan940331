@@ -57,7 +57,7 @@ grub(){
 }
 ssh(){
 	yes | pacman -S openssh
-	echo "Port 16384" >> /etc/ssh/sshd_config.d/settings.conf
+	echo "Port 16384" > /etc/ssh/sshd_config.d/settings.conf
 	echo "HostKey /etc/ssh/ssh_host_rsa_key" >> /etc/ssh/sshd_config.d/settings.conf
 	echo "PasswordAuthentication yes" >> /etc/ssh/sshd_config.d/settings.conf
 	systemctl enable sshd.service
@@ -67,7 +67,7 @@ nvidia_driver(){
 		echo "no NVIDIA video card detected"
 	else
 		yes | pacman -S nvidia
-		echo "options nouveau modeset=0" >> /etc/modprobe.d/nvidia.conf
+		echo "options nouveau modeset=0" > /etc/modprobe.d/nvidia.conf
 		echo "options nvidia_drm modeset=1 fbdev=1" >> etc/modeprobe.d/nvidia.conf
 	fi
 	yes | pacman -S nvidia
@@ -76,13 +76,14 @@ nvidia_driver(){
 }
 Desktop_env(){
 	/root/next_line.sh | pacman -S plasma
-	yes | pacman -S sddm konsole dolphin firefox gwenview vlc gedit noto-fonts-cjk
+	yes | pacman -S sddm 
+	yes | pacman -S konsole dolphin firefox gwenview vlc gedit noto-fonts-cjk
 	mkdir /etc/sddm.conf.d/
-	echo "[Theme]" >> /etc/sddm.conf.d/theme.conf
+	echo "[Theme]" > /etc/sddm.conf.d/theme.conf
 	echo "DisplayServer=wayland" >> /etc/sddm.conf.d/theme.conf
 	echo "Current=breeze" >> /etc/sddm.conf.d/theme.conf
+	yes | pacman -S fcitx5 fcitx5-chewing fcitx5-breeze fcitx5-configtool
 	systemctl enable sddm
-	pacman -S fcitx5 fcitx5-chewing fcitx5-breeze fcitx5-configtool
 }
 
 STATE="$1"
@@ -98,8 +99,9 @@ case "$STATE" in
 
 		cp -p "${BASH_SOURCE[0]}" "/mnt/root"
 		arch-chroot /mnt "/root/$SCRIPT_FILE" "chroot"
-		#rm "/mnt/root/$SCRIPT_FILE"
-		#rm "/root/next_line.sh"
+		
+		rm "/mnt/root/$SCRIPT_FILE"
+		rm "/root/next_line.sh"
 		exit 0
 		;;
 	chroot)
