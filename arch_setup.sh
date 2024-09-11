@@ -46,7 +46,7 @@ grub() {
 	grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=grub --removable
 	mkdir /etc/default/grub.d
 	echo "GRUB_DISABLE_OS_PROBER=false" > /etc/default/grub.d/os-prob.cfg
-	grub-mkconfig -o /boot/grub.cfg
+	grub-mkconfig -o /boot/grub/grub.cfg
 }
 ssh(){
 	hwclock --systohc
