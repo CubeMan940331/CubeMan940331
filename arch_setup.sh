@@ -63,16 +63,13 @@ ssh(){
 	systemctl enable sshd.service
 }
 nvidia_driver(){
-	if [ -z "$(lspci | grep 'NVIDIA')"]; then
+	if [ -z "$(lspci | grep 'NVIDIA')" ]; then
 		echo "no NVIDIA video card detected"
 	else
 		yes | pacman -S nvidia
 		echo "options nouveau modeset=0" > /etc/modprobe.d/nvidia.conf
-		echo "options nvidia_drm modeset=1 fbdev=1" >> etc/modeprobe.d/nvidia.conf
+		echo "options nvidia_drm modeset=1 fbdev=1" >> /etc/modeprobe.d/nvidia.conf
 	fi
-	yes | pacman -S nvidia
-	echo "options nouveau modeset=0" >> /etc/modprobe.d/nvidia.conf
-	echo "options nvidia_drm modeset=1 fbdev=1" >> etc/modeprobe.d/nvidia.conf
 }
 Desktop_env(){
 	/root/next_line.sh | pacman -S plasma
@@ -83,7 +80,15 @@ Desktop_env(){
 	echo "DisplayServer=wayland" >> /etc/sddm.conf.d/theme.conf
 	echo "Current=breeze" >> /etc/sddm.conf.d/theme.conf
 	yes | pacman -S fcitx5 fcitx5-chewing fcitx5-breeze fcitx5-configtool
-	systemctl enable sddm
+ 	
+  	echo "" >> /home/cubeman/.config/kwinrc
+ 	echo "[Wayland]" >> /home/cubeman/.config/kwinrc
+  	echo "InputMethod[$e]=/usr/share/applications/fcitx5-wayland-launcher.desktop" >> /home/cubeman/.config/kwinrc
+
+ 	echo "[AC][SuspendAndShutdown]" > /home/cubeman/.config/powerdevilrc
+  	echo "AutoSuspendAndShutdown=0" >> /home/cubeman/.config/powerdevilrc
+ 
+ 	systemctl enable sddm
 }
 
 STATE="$1"
