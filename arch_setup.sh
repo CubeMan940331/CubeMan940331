@@ -75,7 +75,7 @@ nvidia_driver(){
 	echo "options nvidia_drm modeset=1 fbdev=1" >> etc/modeprobe.d/nvidia.conf
 }
 Desktop_env(){
-	/root/next_line.sh pacman -S plasma
+	/root/next_line.sh | pacman -S plasma
 	yes | pacman -S sddm konsole dolphin firefox gwenview vlc gedit noto-fonts-cjk
 	mkdir /etc/sddm.conf.d/
 	echo "[Theme]" >> /etc/sddm.conf.d/theme.conf
