@@ -101,7 +101,7 @@ case "$STATE" in
 		arch-chroot /mnt "/root/$SCRIPT_FILE" "chroot"
 		
 		rm "/mnt/root/$SCRIPT_FILE"
-		rm "/root/next_line.sh"
+		rm "/mnt/root/next_line.sh"
 		exit 0
 		;;
 	chroot)
