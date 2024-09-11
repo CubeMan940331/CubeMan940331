@@ -5,6 +5,12 @@ echo "$SCRIPT_PATH"
 echo "$SCRIPT_FILE"
 
 basic_config(){
+	echo "while [ true ]; do" > /root/next_line.sh
+	printf "printf " >> /root/next_line.sh
+	printf "\"\\" >> /root/next_line.sh
+	printf "n\"\n" >> /root/next_line.sh
+	echo "done" >> /root/next_line.sh
+	chmod +x /root/next_line.sh
 	# timeZone
 	ln -sf /usr/share/zoneinfo/Asia/Taipei /etc/localtime
 	hwclock --systohc
@@ -20,6 +26,12 @@ basic_config(){
 	echo "LANG=en_US.UTF-8" > /etc/locale.conf
 	# hostname
 	echo "CubecSilicon" > /etc/hostname
+	# sudo	
+	echo "%wheel ALL=(ALL:ALL)  ALL" > /etc/sudoers.d/settings
+	# enable NetworkManager
+	systemctl enable NetworkManager.service
+}
+setting_passwd(){
 	# root passwd
 	echo "setting root passwd"
 	local EXIT="1"
@@ -35,13 +47,8 @@ basic_config(){
 		passwd cubeman
 		EXIT="$?"
 	done
-	# sudo	
-	echo "%wheel ALL=(ALL:ALL)  ALL" > /etc/sudoers.d/settings
-
-	systemctl enable NetworkManager.service
 }
-grub() {
-	hwclock --systohc
+grub(){
 	yes | pacman -S grub os-prober efibootmgr
 	grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=grub --removable
 	mkdir /etc/default/grub.d
@@ -49,25 +56,28 @@ grub() {
 	grub-mkconfig -o /boot/grub/grub.cfg
 }
 ssh(){
-	hwclock --systohc
 	yes | pacman -S openssh
-	mkdir /etc/ssh/sshd_config.d
 	echo "Port 16384" >> /etc/ssh/sshd_config.d/settings.conf
 	echo "HostKey /etc/ssh/ssh_host_rsa_key" >> /etc/ssh/sshd_config.d/settings.conf
 	echo "PasswordAuthentication yes" >> /etc/ssh/sshd_config.d/settings.conf
 	systemctl enable sshd.service
 }
-
 nvidia_driver(){
-	hwclock --systohc
+	if [ -z "$(lspci | grep 'NVIDIA')"]; then
+		echo "no NVIDIA video card detected"
+	else
+		yes | pacman -S nvidia
+		echo "options nouveau modeset=0" >> /etc/modprobe.d/nvidia.conf
+		echo "options nvidia_drm modeset=1 fbdev=1" >> etc/modeprobe.d/nvidia.conf
+	fi
 	yes | pacman -S nvidia
 	echo "options nouveau modeset=0" >> /etc/modprobe.d/nvidia.conf
 	echo "options nvidia_drm modeset=1 fbdev=1" >> etc/modeprobe.d/nvidia.conf
 }
 Desktop_env(){
-	hwclock --systohc
+	/root/next_line.sh pacman -S plasma
 	yes | pacman -S sddm konsole dolphin firefox gwenview vlc gedit noto-fonts-cjk
-	pacman -S plasma
+	mkdir /etc/sddm.conf.d/
 	echo "[Theme]" >> /etc/sddm.conf.d/theme.conf
 	echo "DisplayServer=wayland" >> /etc/sddm.conf.d/theme.conf
 	echo "Current=breeze" >> /etc/sddm.conf.d/theme.conf
@@ -88,16 +98,17 @@ case "$STATE" in
 
 		cp -p "${BASH_SOURCE[0]}" "/mnt/root"
 		arch-chroot /mnt "/root/$SCRIPT_FILE" "chroot"
-		rm "/mnt/root/$SCRIPT_FILE"
-
+		#rm "/mnt/root/$SCRIPT_FILE"
+		#rm "/root/next_line.sh"
 		exit 0
 		;;
 	chroot)
 		basic_config
 		grub
-		#ssh
-		#nvidia_driver
-		#Desktop_env
+		ssh
+		nvidia_driver
+		Desktop_env
+		setting_passwd
 		exit 0
 		;;
 esac
