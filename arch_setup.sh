@@ -1,3 +1,7 @@
+user_name="cubeman"
+encrypted_user_passwd='$6$c8763$bEm7hotlCDCzVDzNuFy9dT/Q3uSQygpJYdddPBRX9AvpRBS1SK6qSF4RYsrOfuuO3KvojI7FNzgnH2AV38yPJ.'
+encrypted_root_passwd='$6$c8763$oNeOe7sJhdy4Gkv16nA69HmO3fyrPt0F12bKZR.rH9cy0u2WA/jSWJPfnXl3bgQ9s2OxMTNnBdXIsa.Ov56nZ0'
+
 SCRIPT_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SCRIPT_FILE="$(basename "${BASH_SOURCE[0]}")"
 
@@ -11,6 +15,8 @@ basic_config(){
 	printf "n\"\n" >> /root/next_line.sh
 	echo "done" >> /root/next_line.sh
 	chmod +x /root/next_line.sh
+	# setting mirror
+	echo "Server = https://archlinux.cs.nycu.edu.tw/\$repo/os/\$arch" >> /etc/pacman.d/mirrorlist
 	# timeZone
 	ln -sf /usr/share/zoneinfo/Asia/Taipei /etc/localtime
 	hwclock --systohc
@@ -20,7 +26,7 @@ basic_config(){
 	rm /tmp/locale.gen
 
 	cat /etc/locale.gen | sed -e 's/^#zh_TW.UTF-8 UTF-8/zh_TW.UTF-8 UTF-8/' > /tmp/locale.gen
-	cat tmp.txt > /etc/locale.gen
+	cat /tmp/locale.gen > /etc/locale.gen
 	rm /tmp/locale.gen
 	locale-gen
 	echo "LANG=en_US.UTF-8" > /etc/locale.conf
@@ -30,23 +36,11 @@ basic_config(){
 	echo "%wheel ALL=(ALL:ALL)  ALL" > /etc/sudoers.d/settings
 	# enable NetworkManager
 	systemctl enable NetworkManager.service
-}
-setting_passwd(){
 	# root passwd
-	echo "setting root passwd"
-	local EXIT="1"
-	while [ "$EXIT" != "0" ];do
-		passwd root
-		EXIT="$?"
-	done
+	chpasswd -e "$encrypted_root_passwd" root
 	# add user
-	echo "setting cubeman passwd"
-	useradd -mG wheel cubeman
-	EXIT="1"
-	while [ "$EXIT" != "0" ]; do
-		passwd cubeman
-		EXIT="$?"
-	done
+	useradd -mNG wheel "$user_name"
+	chpasswd -e "$encrypted_user_passwd" "$user_name"
 }
 grub(){
 	yes | pacman -S grub os-prober efibootmgr
@@ -57,14 +51,13 @@ grub(){
 }
 ssh(){
 	yes | pacman -S openssh
-	echo "Port 16384" > /etc/ssh/sshd_config.d/settings.conf
-	echo "HostKey /etc/ssh/ssh_host_rsa_key" >> /etc/ssh/sshd_config.d/settings.conf
+	echo "HostKey /etc/ssh/ssh_host_rsa_key" > /etc/ssh/sshd_config.d/settings.conf
 	echo "PasswordAuthentication yes" >> /etc/ssh/sshd_config.d/settings.conf
 	systemctl enable sshd.service
 }
 nvidia_driver(){
-	if [ -z "$(lspci | grep 'NVIDIA')" ]; then
-		echo "no NVIDIA video card detected"
+	if [ -z "$(lspci | grep 'VGA' | grep 'NVIDIA')" ]; then
+		echo "no NVIDIA GPU detected"
 	else
 		yes | pacman -S nvidia
 		echo "options nouveau modeset=0" > /etc/modprobe.d/nvidia.conf
@@ -73,7 +66,7 @@ nvidia_driver(){
 }
 Desktop_env(){
 	/root/next_line.sh | pacman -S plasma
-	yes | pacman -S sddm 
+	yes | pacman -S sddm
 	yes | pacman -S konsole dolphin firefox gwenview vlc gedit noto-fonts-cjk
 	mkdir /etc/sddm.conf.d/
 	echo "[Theme]" > /etc/sddm.conf.d/theme.conf
@@ -81,12 +74,12 @@ Desktop_env(){
 	echo "Current=breeze" >> /etc/sddm.conf.d/theme.conf
 	yes | pacman -S fcitx5 fcitx5-chewing fcitx5-breeze fcitx5-configtool
  	
-  	echo "" >> /home/cubeman/.config/kwinrc
- 	echo "[Wayland]" >> /home/cubeman/.config/kwinrc
-  	echo "InputMethod[$e]=/usr/share/applications/fcitx5-wayland-launcher.desktop" >> /home/cubeman/.config/kwinrc
+  	echo "" >> "/home/$user_name/.config/kwinrc"
+ 	echo "[Wayland]" >> "/home/$user_name/.config/kwinrc"
+  	echo "InputMethod[$e]=/usr/share/applications/fcitx5-wayland-launcher.desktop" >> "/home/$user_name/.config/kwinrc"
 
- 	echo "[AC][SuspendAndShutdown]" > /home/cubeman/.config/powerdevilrc
-  	echo "AutoSuspendAndShutdown=0" >> /home/cubeman/.config/powerdevilrc
+ 	echo "[AC][SuspendAndShutdown]" > "/home/$user_name/.config/powerdevilrc"
+  	echo "AutoSuspendAndShutdown=0" >> "/home/$user_name/.config/powerdevilrc"
  
  	systemctl enable sddm
 }
@@ -115,7 +108,6 @@ case "$STATE" in
 		ssh
 		nvidia_driver
 		Desktop_env
-		setting_passwd
 		exit 0
 		;;
 esac
