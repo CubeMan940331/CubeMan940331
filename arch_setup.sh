@@ -37,10 +37,10 @@ basic_config(){
 	# enable NetworkManager
 	systemctl enable NetworkManager.service
 	# root passwd
-	chpasswd -e "$encrypted_root_passwd" root
+	chpasswd -e "'$encrypted_root_passwd'" root
 	# add user
 	useradd -mNG wheel "$user_name"
-	chpasswd -e "$encrypted_user_passwd" "$user_name"
+	chpasswd -e "'$encrypted_user_passwd'" "$user_name"
 }
 grub(){
 	yes | pacman -S grub os-prober efibootmgr
