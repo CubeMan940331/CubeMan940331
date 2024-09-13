@@ -5,18 +5,15 @@ encrypted_root_passwd='$6$c8763$oNeOe7sJhdy4Gkv16nA69HmO3fyrPt0F12bKZR.rH9cy0u2W
 SCRIPT_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SCRIPT_FILE="$(basename "${BASH_SOURCE[0]}")"
 
-echo "$SCRIPT_PATH"
-echo "$SCRIPT_FILE"
-
-basic_config(){
+next_line(){
 	echo "while [ true ]; do" > /root/next_line.sh
-	printf "printf " >> /root/next_line.sh
-	printf "\"\\" >> /root/next_line.sh
-	printf "n\"\n" >> /root/next_line.sh
+	echo 'printf "\\n"' >> /root/next_line.sh
 	echo "done" >> /root/next_line.sh
 	chmod +x /root/next_line.sh
+}
+basic_config(){
 	# setting mirror
-	echo "Server = https://archlinux.cs.nycu.edu.tw/\$repo/os/\$arch" >> /etc/pacman.d/mirrorlist
+	echo 'Server = https://archlinux.cs.nycu.edu.tw/$repo/os/$arch' >> /etc/pacman.d/mirrorlist
 	# timeZone
 	ln -sf /usr/share/zoneinfo/Asia/Taipei /etc/localtime
 	hwclock --systohc
@@ -37,10 +34,10 @@ basic_config(){
 	# enable NetworkManager
 	systemctl enable NetworkManager.service
 	# root passwd
-	chpasswd -e "'$encrypted_root_passwd'" root
+	echo "root:$encrypted_root_passwd" | chpasswd -e
 	# add user
 	useradd -mNG wheel "$user_name"
-	chpasswd -e "'$encrypted_user_passwd'" "$user_name"
+	echo "$user_name:$encrypted_user_passwd" | chpasswd -e
 }
 grub(){
 	yes | pacman -S grub os-prober efibootmgr
@@ -59,29 +56,24 @@ nvidia_driver(){
 	if [ -z "$(lspci | grep 'VGA' | grep 'NVIDIA')" ]; then
 		echo "no NVIDIA GPU detected"
 	else
-		yes | pacman -S nvidia
+		yes | pacman -S nvidia nvidia-utils nvidia-settings opencl-nvidia
 		echo "options nouveau modeset=0" > /etc/modprobe.d/nvidia.conf
-		echo "options nvidia_drm modeset=1 fbdev=1" >> /etc/modeprobe.d/nvidia.conf
+		echo "options nvidia_drm modeset=1 fbdev=1" >> /etc/modprobe.d/nvidia.conf
 	fi
 }
 Desktop_env(){
+	next_line
 	/root/next_line.sh | pacman -S plasma
-	yes | pacman -S sddm
-	yes | pacman -S konsole dolphin firefox gwenview vlc gedit noto-fonts-cjk
+	yes | pacman -S sddm konsole dolphin firefox gwenview vlc gedit noto-fonts-cjk
 	mkdir /etc/sddm.conf.d/
 	echo "[Theme]" > /etc/sddm.conf.d/theme.conf
 	echo "DisplayServer=wayland" >> /etc/sddm.conf.d/theme.conf
 	echo "Current=breeze" >> /etc/sddm.conf.d/theme.conf
 	yes | pacman -S fcitx5 fcitx5-chewing fcitx5-breeze fcitx5-configtool
  	
-  	echo "" >> "/home/$user_name/.config/kwinrc"
- 	echo "[Wayland]" >> "/home/$user_name/.config/kwinrc"
-  	echo "InputMethod[$e]=/usr/share/applications/fcitx5-wayland-launcher.desktop" >> "/home/$user_name/.config/kwinrc"
-
- 	echo "[AC][SuspendAndShutdown]" > "/home/$user_name/.config/powerdevilrc"
-  	echo "AutoSuspendAndShutdown=0" >> "/home/$user_name/.config/powerdevilrc"
- 
  	systemctl enable sddm
+	
+	rm /root/next_line.sh
 }
 
 STATE="$1"
@@ -92,14 +84,13 @@ fi
 
 case "$STATE" in
 	base)
-		pacstrap -K /mnt base linux linux-firmware base-devel networkmanager vim man-db net-tools
+		pacstrap -K /mnt base linux linux-firmware base-devel networkmanager vim man-db net-tools git wget
 		genfstab -U /mnt >> /mnt/etc/fstab
 
 		cp -p "${BASH_SOURCE[0]}" "/mnt/root"
 		arch-chroot /mnt "/root/$SCRIPT_FILE" "chroot"
 		
 		rm "/mnt/root/$SCRIPT_FILE"
-		rm "/mnt/root/next_line.sh"
 		exit 0
 		;;
 	chroot)
@@ -111,3 +102,4 @@ case "$STATE" in
 		exit 0
 		;;
 esac
+
