@@ -63,8 +63,8 @@ nvidia_driver(){
 }
 Desktop_env(){
 	next_line
-	/root/next_line.sh | pacman -S plasma
-	yes | pacman -S sddm konsole dolphin firefox gwenview vlc gedit noto-fonts-cjk
+	/root/next_line.sh | pacman -S plasma sddm noto-fonts-cjk
+	yes | pacman -S konsole dolphin firefox gwenview vlc gedit
 	mkdir /etc/sddm.conf.d/
 	echo "[Theme]" > /etc/sddm.conf.d/theme.conf
 	echo "DisplayServer=wayland" >> /etc/sddm.conf.d/theme.conf
