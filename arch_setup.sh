@@ -13,7 +13,9 @@ next_line(){
 }
 basic_config(){
 	# setting mirror
-	echo 'Server = https://archlinux.cs.nycu.edu.tw/$repo/os/$arch' >> /etc/pacman.d/mirrorlist
+	sed -e 10a\ 'Server = https://archlinux.cs.nycu.edu.tw/$repo/os/$arch' /etc/pacman.d/mirrorlist > /tmp/mirrorlist
+	cat /tmp/mirrorlist > /etc/pcaman.d/mirrorlist
+	rm /tmp/mirrorlist
 	# timeZone
 	ln -sf /usr/share/zoneinfo/Asia/Taipei /etc/localtime
 	hwclock --systohc
@@ -61,6 +63,10 @@ nvidia_driver(){
 		echo "options nvidia_drm modeset=1 fbdev=1" >> /etc/modprobe.d/nvidia.conf
 	fi
 }
+install_yay(){
+	git clone https://aur.archlinux.org/yay.git /tmp/yay
+	su nobody -s /bin/bash -c "cd /tmp/yay && makepkg -si"
+}
 Desktop_env(){
 	next_line
 	/root/next_line.sh | pacman -S plasma sddm noto-fonts-cjk
@@ -72,8 +78,6 @@ Desktop_env(){
 	yes | pacman -S fcitx5 fcitx5-chewing fcitx5-breeze fcitx5-configtool
  	
  	systemctl enable sddm
-	
-	rm /root/next_line.sh
 }
 
 STATE="$1"
@@ -94,12 +98,14 @@ case "$STATE" in
 		exit 0
 		;;
 	chroot)
+		next_line
 		basic_config
 		grub
 		ssh
 		nvidia_driver
+		install_yay
 		Desktop_env
+		rm /root/next_line.sh
 		exit 0
 		;;
 esac
-
