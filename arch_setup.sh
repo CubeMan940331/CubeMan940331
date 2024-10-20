@@ -94,7 +94,7 @@ case "$STATE" in
 		cp -p "${BASH_SOURCE[0]}" "/mnt/root"
 		arch-chroot /mnt "/root/$SCRIPT_FILE" "chroot"
 		
-		rm "/mnt/root/$SCRIPT_FILE"
+		#rm "/mnt/root/$SCRIPT_FILE"
 		exit 0
 		;;
 	chroot)
