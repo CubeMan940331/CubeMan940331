@@ -88,6 +88,7 @@ fi
 
 case "$STATE" in
 	base)
+ 		timedatectl
 		pacstrap -K /mnt base linux linux-firmware base-devel networkmanager vim man-db net-tools git wget
 		genfstab -U /mnt >> /mnt/etc/fstab
 
