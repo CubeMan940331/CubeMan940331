@@ -75,7 +75,7 @@ Desktop_env(){
 	echo "[Theme]" > /etc/sddm.conf.d/theme.conf
 	echo "DisplayServer=wayland" >> /etc/sddm.conf.d/theme.conf
 	echo "Current=breeze" >> /etc/sddm.conf.d/theme.conf
-	yes | pacman -S fcitx5 fcitx5-chewing fcitx5-breeze fcitx5-configtool
+	/root/next_line.sh | pacman -S fcitx5 fcitx5-chewing fcitx5-breeze fcitx5-configtool
  	
  	systemctl enable sddm
 }
