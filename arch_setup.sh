@@ -14,7 +14,7 @@ next_line(){
 basic_config(){
 	# setting mirror
 	sed -e 10a\ 'Server = https://archlinux.cs.nycu.edu.tw/$repo/os/$arch' /etc/pacman.d/mirrorlist > /tmp/mirrorlist
-	cat /tmp/mirrorlist > /etc/pcaman.d/mirrorlist
+	cat /tmp/mirrorlist > /etc/pacman.d/mirrorlist
 	rm /tmp/mirrorlist
 	# timeZone
 	ln -sf /usr/share/zoneinfo/Asia/Taipei /etc/localtime
