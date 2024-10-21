@@ -48,7 +48,7 @@ grub(){
 	echo "GRUB_DISABLE_OS_PROBER=false" > /etc/default/grub.d/os-prob.cfg
 	grub-mkconfig -o /boot/grub/grub.cfg
 }
-ssh(){
+ssh_config(){
 	yes | pacman -S openssh
 	echo "HostKey /etc/ssh/ssh_host_rsa_key" > /etc/ssh/sshd_config.d/settings.conf
 	echo "PasswordAuthentication yes" >> /etc/ssh/sshd_config.d/settings.conf
@@ -101,7 +101,7 @@ case "$STATE" in
 		next_line
 		basic_config
 		grub
-		ssh
+		ssh_config
 		nvidia_driver
 		install_yay
 		Desktop_env
