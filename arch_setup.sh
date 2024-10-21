@@ -79,7 +79,16 @@ Desktop_env(){
  	
  	systemctl enable sddm
 }
-
+vscode(){
+	wget -P /tmp/ `curl 'https://code.visualstudio.com/sha/download?build=stable&os=linux-x64' | sed 's/http/\nhttp/g' | grep http`
+	tar -zxf /tmp/code-stable*.tar.gz -C /usr/lib
+	ln -s /usr/lib/VSCode-linux-x64/code /usr/bin/code
+}
+others(){
+	yes | pacman -S jdk-openjdk bluez
+	systemctl enable bluetooth.service
+	yes | pacman -S sl cmatrix cowsay figlet neofetch tmux
+}
 STATE="$1"
 
 if [ -z "$STATE" ]; then
@@ -106,6 +115,8 @@ case "$STATE" in
 		nvidia_driver
 		install_yay
 		Desktop_env
+		vscode
+		others
 		rm /root/next_line.sh
 		exit 0
 		;;
