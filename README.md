@@ -1,3 +1,3 @@
 ﻿# CubeMAn940331
 
-uploading some random things I made...
+a random cs student
