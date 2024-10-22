@@ -1,4 +1,5 @@
 #!/bin/bash
+id=""
 user_name=""
 encrypted_user_passwd=''
 encrypted_root_passwd=''
@@ -31,7 +32,7 @@ basic_config(){
 	locale-gen
 	echo "LANG=en_US.UTF-8" > /etc/locale.conf
 	# hostname
-	echo "sa2024-" > /etc/hostname
+	echo "sa2024-$id" > /etc/hostname
 	# sudo	
 	echo "%wheel ALL=(ALL:ALL)  ALL" > /etc/sudoers.d/settings
 	# enable NetworkManager
@@ -46,7 +47,7 @@ basic_config(){
 	groupadd nycusa -U judge
 	echo "%nycusa ALL=(ALL:ALL) NOPASSWD: ALL" >> /etc/sudoers.d/settings
 	# motd
-	echo 'NYCU-SA-2024-' >> /etc/motd
+	echo "NYCU-SA-2024-$id" >> /etc/motd
 	# WireGuard
 	yes | pacman -S wireguard-tools
 	echo '[Interface]' >> /etc/wireguard/wg0.conf
@@ -85,7 +86,7 @@ nvidia_driver(){
 Desktop_env(){
 	next_line
 	/root/next_line.sh | pacman -S plasma sddm noto-fonts-cjk
-	yes | pacman -S konsole dolphin firefox gwenview vlc gedit
+	yes | pacman -S konsole dolphin firefox gwenview gedit
 	mkdir /etc/sddm.conf.d/
 	echo "[Theme]" > /etc/sddm.conf.d/theme.conf
 	echo "DisplayServer=wayland" >> /etc/sddm.conf.d/theme.conf
