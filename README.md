@@ -1,3 +1,3 @@
-﻿# CubeMAn940331
+﻿# CubeMan940331
 
 a random cs student
