@@ -1,5 +1,6 @@
 #!/bin/bash
 user_name="cubeman"
+# $ openssl passwd -6
 encrypted_user_passwd='$6$c8763$bEm7hotlCDCzVDzNuFy9dT/Q3uSQygpJYdddPBRX9AvpRBS1SK6qSF4RYsrOfuuO3KvojI7FNzgnH2AV38yPJ.'
 encrypted_root_passwd='$6$c8763$oNeOe7sJhdy4Gkv16nA69HmO3fyrPt0F12bKZR.rH9cy0u2WA/jSWJPfnXl3bgQ9s2OxMTNnBdXIsa.Ov56nZ0'
 
@@ -64,10 +65,6 @@ nvidia_driver(){
 		echo "options nvidia_drm modeset=1 fbdev=1" >> /etc/modprobe.d/nvidia.conf
 	fi
 }
-install_yay(){
-	git clone https://aur.archlinux.org/yay.git /tmp/yay
-	su nobody -s /bin/bash -c "cd /tmp/yay && makepkg -si"
-}
 Desktop_env(){
 	next_line
 	/root/next_line.sh | pacman -S plasma sddm noto-fonts-cjk
@@ -114,7 +111,6 @@ case "$STATE" in
 		grub
 		ssh_config
 		nvidia_driver
-		install_yay
 		Desktop_env
 		vscode
 		others
