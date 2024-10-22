@@ -1,8 +1,9 @@
+#!/bin/bash
 user_name="cubeman"
 encrypted_user_passwd='$6$c8763$bEm7hotlCDCzVDzNuFy9dT/Q3uSQygpJYdddPBRX9AvpRBS1SK6qSF4RYsrOfuuO3KvojI7FNzgnH2AV38yPJ.'
 encrypted_root_passwd='$6$c8763$oNeOe7sJhdy4Gkv16nA69HmO3fyrPt0F12bKZR.rH9cy0u2WA/jSWJPfnXl3bgQ9s2OxMTNnBdXIsa.Ov56nZ0'
 
-SCRIPT_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# SCRIPT_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SCRIPT_FILE="$(basename "${BASH_SOURCE[0]}")"
 
 next_line(){
@@ -20,11 +21,11 @@ basic_config(){
 	ln -sf /usr/share/zoneinfo/Asia/Taipei /etc/localtime
 	hwclock --systohc
 	# locale
-	cat /etc/locale.gen | sed -e 's/^#en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' > /tmp/locale.gen
+	sed -e 's/^#en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' < /etc/locale.gen > /tmp/locale.gen
 	cat /tmp/locale.gen > /etc/locale.gen
 	rm /tmp/locale.gen
 
-	cat /etc/locale.gen | sed -e 's/^#zh_TW.UTF-8 UTF-8/zh_TW.UTF-8 UTF-8/' > /tmp/locale.gen
+	sed -e 's/^#zh_TW.UTF-8 UTF-8/zh_TW.UTF-8 UTF-8/' < /etc/locale.gen > /tmp/locale.gen
 	cat /tmp/locale.gen > /etc/locale.gen
 	rm /tmp/locale.gen
 	locale-gen
@@ -80,7 +81,7 @@ Desktop_env(){
  	systemctl enable sddm
 }
 vscode(){
-	wget -P /tmp/ `curl 'https://code.visualstudio.com/sha/download?build=stable&os=linux-x64' | sed 's/http/\nhttp/g' | grep http`
+	wget -P /tmp/ "$(curl 'https://code.visualstudio.com/sha/download?build=stable&os=linux-x64' | sed 's/http/\nhttp/g' | grep http)"
 	tar -zxf /tmp/code-stable*.tar.gz -C /usr/lib
 	ln -s /usr/lib/VSCode-linux-x64/code /usr/bin/code
 }
