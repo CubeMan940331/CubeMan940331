@@ -1,8 +1,8 @@
 #!/bin/bash
 user_name="cubeman"
 # $ openssl passwd -6
-encrypted_user_passwd='$6$c8763$bEm7hotlCDCzVDzNuFy9dT/Q3uSQygpJYdddPBRX9AvpRBS1SK6qSF4RYsrOfuuO3KvojI7FNzgnH2AV38yPJ.'
-encrypted_root_passwd='$6$c8763$oNeOe7sJhdy4Gkv16nA69HmO3fyrPt0F12bKZR.rH9cy0u2WA/jSWJPfnXl3bgQ9s2OxMTNnBdXIsa.Ov56nZ0'
+encrypted_user_passwd='$6$NYdoX5w2VEXwm513$es..D5KH3KxRuLOPNBYKZ4h134gh6PWUydTQb8vNMQbX1lXzZjYyfrqbO5DVtQ0dCaCdS9I4jMjI66hIcqEwQ.'
+encrypted_root_passwd='$6$g8H6iVT5hfkgJsYs$ScbjzJQkcHXcmDMerQzq5lO2/jPu.C1VLVewY/FnjmQ92Ul4LFYCxXW8YtGhQQ946MbgdJS8zaCU.8IN3MAGT/'
 
 # SCRIPT_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SCRIPT_FILE="$(basename "${BASH_SOURCE[0]}")"
