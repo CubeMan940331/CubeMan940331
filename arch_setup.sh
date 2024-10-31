@@ -18,6 +18,8 @@ basic_config(){
 	sed -e 10a\ 'Server = https://archlinux.cs.nycu.edu.tw/$repo/os/$arch' /etc/pacman.d/mirrorlist > /tmp/mirrorlist
 	cat /tmp/mirrorlist > /etc/pacman.d/mirrorlist
 	rm /tmp/mirrorlist
+	# other enssential packages
+	yes | pacman -S  vim man-db net-tools git wget tmux
 	# timeZone
 	ln -sf /usr/share/zoneinfo/Asia/Taipei /etc/localtime
 	hwclock --systohc
@@ -97,7 +99,7 @@ vscode(){
 others(){
 	yes | pacman -S jdk-openjdk bluez
 	systemctl enable bluetooth.service
-	yes | pacman -S sl cmatrix cowsay figlet neofetch tmux
+	yes | pacman -S sl cmatrix cowsay figlet neofetch
 }
 STATE="$1"
 
@@ -108,13 +110,13 @@ fi
 case "$STATE" in
 	base)
  		timedatectl
-		pacstrap -K /mnt base linux linux-firmware base-devel networkmanager vim man-db net-tools git wget
+		pacstrap -K /mnt base linux linux-firmware base-devel networkmanager
 		genfstab -U /mnt >> /mnt/etc/fstab
 
 		cp -p "${BASH_SOURCE[0]}" "/mnt/root"
 		arch-chroot /mnt "/root/$SCRIPT_FILE" "chroot"
 		
-		#rm "/mnt/root/$SCRIPT_FILE"
+		rm "/mnt/root/$SCRIPT_FILE"
 		exit 0
 		;;
 	chroot)
