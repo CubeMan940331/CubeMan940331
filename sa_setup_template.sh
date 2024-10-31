@@ -18,6 +18,8 @@ basic_config(){
 	sed -e 10a\ 'Server = https://archlinux.cs.nycu.edu.tw/$repo/os/$arch' /etc/pacman.d/mirrorlist > /tmp/mirrorlist
 	cat /tmp/mirrorlist > /etc/pacman.d/mirrorlist
 	rm /tmp/mirrorlist
+	# other enssential packages
+	yes | pacman -S  vim man-db net-tools git wget tmux
 	# timeZone
 	ln -sf /usr/share/zoneinfo/Asia/Taipei /etc/localtime
 	hwclock --systohc
@@ -70,7 +72,20 @@ ssh_config(){
 	yes | pacman -S openssh
 	echo "HostKey /etc/ssh/ssh_host_rsa_key" > /etc/ssh/sshd_config.d/settings.conf
 	echo "PasswordAuthentication yes" >> /etc/ssh/sshd_config.d/settings.conf
+
+	yes | pacman -S fail2ban
+	echo "[sshd]" >> /etc/fail2ban/jail.d/sshd.local
+	echo "enabled = true" >> /etc/fail2ban/jail.d/sshd.local
+	echo "filter = sshd" >> /etc/fail2ban/jail.d/sshd.local
+	echo "banaction = iptables" >> /etc/fail2ban/jail.d/sshd.local
+	echo "backend = systemd" >> /etc/fail2ban/jail.d/sshd.local
+	echo "maxretry = 5" >> /etc/fail2ban/jail.d/sshd.local
+	echo "findtime = 1d" >> /etc/fail2ban/jail.d/sshd.local
+	echo "bantime = 30" >> /etc/fail2ban/jail.d/sshd.local
+
 	systemctl enable sshd.service
+	systemctl enable fail2ban.service
+
 	mkdir /home/judge/.ssh
 	curl 'https://nasa.cs.nycu.edu.tw/sa/2024/nasakey.pub' >> /home/judge/.ssh/authorized_keys
 }
@@ -112,7 +127,7 @@ fi
 case "$STATE" in
 	base)
  		timedatectl
-		pacstrap -K /mnt base linux linux-firmware base-devel networkmanager vim man-db net-tools git wget
+		pacstrap -K /mnt base linux linux-firmware base-devel networkmanager
 		genfstab -U /mnt >> /mnt/etc/fstab
 
 		cp -p "${BASH_SOURCE[0]}" "/mnt/root"
