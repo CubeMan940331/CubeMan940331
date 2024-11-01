@@ -102,6 +102,7 @@ others(){
 	systemctl enable bluetooth.service
 	yes | pacman -S sl cmatrix cowsay figlet neofetch
 	printf "2\n\n" | pacman -S virtualbox
+	yes | pacman -S ntfs-3g
 }
 STATE="$1"
 
