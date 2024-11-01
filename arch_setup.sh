@@ -23,6 +23,7 @@ basic_config(){
 	# timeZone
 	ln -sf /usr/share/zoneinfo/Asia/Taipei /etc/localtime
 	hwclock --systohc
+	systemctl enable systemd-timesyncd.service
 	# locale
 	sed -e 's/^#en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' < /etc/locale.gen > /tmp/locale.gen
 	cat /tmp/locale.gen > /etc/locale.gen
