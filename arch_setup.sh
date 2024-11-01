@@ -100,6 +100,7 @@ others(){
 	yes | pacman -S jdk-openjdk bluez
 	systemctl enable bluetooth.service
 	yes | pacman -S sl cmatrix cowsay figlet neofetch
+	printf "2\n\n" | pacman -S virtualbox
 }
 STATE="$1"
 
